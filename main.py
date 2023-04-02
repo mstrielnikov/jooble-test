@@ -22,14 +22,10 @@ test_df = spark.read.csv(f"{WorkDir}/data/input/test.csv", header=True, inferSch
 # Enumerate column headers which starts with `feature_type_1_`
 feature_cols = [ header for header in test_df.columns if header.startswith('feature_type_1_') ]
 
-# Compute mean and standard deviation for each `feature_type_1`-like column from train.csv
-means = train_df.select([ mean(col(column)) for column in feature_cols ])
-stddevs = train_df.select([ stddev(col(column)) for column in feature_cols ])
-
 # Iterate over feature_type_1_{i} columns and perform z-standardization for each value in a feature column
 for feature_col in feature_cols:
-    mean_val = lit(means.select(f"avg({feature_col})").collect()[0][0])
-    stddev_val = lit(stddevs.select(f"stddev_samp({feature_col})").collect()[0][0])
+    mean_val = lit(train_df.select(feature_col).collect()[0][0])
+    stddev_val = lit(train_df.select(feature_col).collect()[0][0])
 
     new_column_name = "feature_type_1_stand_{}".format(feature_col.removeprefix('feature_type_1_'))
 
