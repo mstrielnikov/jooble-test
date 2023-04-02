@@ -34,7 +34,10 @@ for feature_col in feature_cols:
     mean_lit = lit(mean_val).cast(FloatType())
     stddev_lit = lit(stddev_val).cast(FloatType())
 
-    test_df = test_df.withColumn(feature_col, z_score_udf(col(feature_col).cast(FloatType()), mean_lit, stddev_lit))
+    new_column_name = "feature_type_1_stand_{}".format(feature_col.removeprefix('feature_type_1_'))
+
+    test_df = test_df.withColumn(feature_col, z_score_udf(col(feature_col).cast(FloatType()), mean_lit, stddev_lit))\
+                     .withColumnRenamed(feature_col, new_column_name)
     
 test_df.show()
 
