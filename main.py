@@ -36,7 +36,6 @@ for feature_col in feature_cols:
     test_df = test_df.withColumn(feature_col, z_score_udf(col(feature_col), mean_val, stddev_val))\
                      .withColumnRenamed(feature_col, new_column_name)
     
-# Coalesce the result DataFrame to a single partition and save it in csv
-# test_df.coalesce(1).repartition(1).write.csv(f"{WorkDir}/data/output/test_transformed.csv", header=True, mode="overwrite")
+test_df.toPandas().to_csv(f"{WorkDir}/data/output/test_transformed.csv")
 
 spark.stop()
