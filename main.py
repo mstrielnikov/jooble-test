@@ -1,7 +1,6 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import stddev, mean, col, udf, lit
-from pyspark.sql.types import DoubleType, FloatType, IntegerType, ArrayType
-from pyspark.ml.feature import StandardScaler
+from pyspark.sql.types import FloatType
 from os import getcwd
 
 WorkDir = getcwd()
