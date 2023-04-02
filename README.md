@@ -1,7 +1,12 @@
 # jooble-test
 
-# Z-sore calculation 
+PySpark module to calculate Standardization ([Z-score Normalization](https://en.wikipedia.org/wiki/Feature_scaling#Standardization_(Z-score_Normalization))) using input data from [train](./data/input/train.csv) source and [test](./data/input/test.csv) source CSV-files
 
+# Z-score calculation 
+
+File with full [answer](./data/output/test_transformed.csv)
+
+Peace of processed data:
 ```sql
 +----+--------------------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+
 |  id|              id_job|feature_type_1_stand_0|feature_type_1_stand_1|feature_type_1_stand_2|feature_type_1_stand_3|feature_type_1_stand_4|feature_type_1_stand_5|feature_type_1_stand_6|feature_type_1_stand_7|feature_type_1_stand_8|feature_type_1_stand_9|+----+--------------------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+----------------+
