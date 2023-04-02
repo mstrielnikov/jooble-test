@@ -17,7 +17,8 @@ def transform_data(input_test_path, input_train_path, output_path):
     Transform data in CSV format by computing the Z-score for each value in selected columns.
     
     Parameters:
-        input_path (str): Path to the input CSV file.
+        input_test_path (str): Path to the input test CSV file.
+        input_train_path (str): Path to the input CSV file with training data.
         output_path (str): Path to the output CSV file.
     """
     # Load *.csv
