@@ -16,8 +16,8 @@ def z_score(x, mean, stddev):
 z_score_udf = udf(z_score, FloatType())
 
 # Load *.csv
-train_df = spark.read.csv(f"{WorkDir}/data/input/train.csv", header=True)
-test_df = spark.read.csv(f"{WorkDir}/data/input/test.csv", header=True)
+train_df = spark.read.csv(f"{WorkDir}/data/input/train.csv", header=True, inferSchema=True)
+test_df = spark.read.csv(f"{WorkDir}/data/input/test.csv", header=True, inferSchema=True)
 
 # Enumerate column headers which starts with `feature_type_1_`
 feature_cols = [ header for header in test_df.columns if header.startswith('feature_type_1_') ]
@@ -28,21 +28,15 @@ stddevs = train_df.select([ stddev(col(column)) for column in feature_cols ])
 
 # Iterate over feature_type_1_{i} columns and perform z-standardization for each value in a feature column
 for feature_col in feature_cols:
-    mean_val = means.select(f"avg({feature_col})").collect()[0][0]
-    stddev_val = stddevs.select(f"stddev_samp({feature_col})").collect()[0][0]
-
-    mean_lit = lit(mean_val).cast(FloatType())
-    stddev_lit = lit(stddev_val).cast(FloatType())
+    mean_val = lit(means.select(f"avg({feature_col})").collect()[0][0])
+    stddev_val = lit(stddevs.select(f"stddev_samp({feature_col})").collect()[0][0])
 
     new_column_name = "feature_type_1_stand_{}".format(feature_col.removeprefix('feature_type_1_'))
 
-    test_df = test_df.withColumn(feature_col, z_score_udf(col(feature_col).cast(FloatType()), mean_lit, stddev_lit))\
+    test_df = test_df.withColumn(feature_col, z_score_udf(col(feature_col), mean_val, stddev_val))\
                      .withColumnRenamed(feature_col, new_column_name)
     
-test_df.show()
-
-# Df.write.csv(f"{WorkDir}/data/output/test_transformed.csv", header=True)
+# Coalesce the result DataFrame to a single partition and save it in csv
+# test_df.coalesce(1).repartition(1).write.csv(f"{WorkDir}/data/output/test_transformed.csv", header=True, mode="overwrite")
 
 spark.stop()
-
-
