@@ -24,14 +24,16 @@ feature_cols = [ header for header in test_df.columns if header.startswith('feat
 
 # Iterate over feature_type_1_{i} columns and perform z-standardization for each value in a feature column
 for feature_col in feature_cols:
-    mean_val = lit(train_df.select(feature_col).collect()[0][0])
-    stddev_val = lit(train_df.select(feature_col).collect()[0][0])
+    mean_val = lit(train_df.select(mean(feature_col)).collect()[0][0])
+    stddev_val = lit(train_df.select(stddev(feature_col)).collect()[0][0])
 
     new_column_name = "feature_type_1_stand_{}".format(feature_col.removeprefix('feature_type_1_'))
 
     test_df = test_df.withColumn(feature_col, z_score_udf(col(feature_col), mean_val, stddev_val))\
                      .withColumnRenamed(feature_col, new_column_name)
     
+test_df.show()
+
 test_df.toPandas().to_csv(f"{WorkDir}/data/output/test_transformed.csv")
 
 spark.stop()
