@@ -5,7 +5,7 @@ setup(
     version="0.1",
     packages=find_packages(),
     install_requires=[
-        "pyspark==3.2.0",
+        "pyspark==3.2.2",
         "pandas==1.3.5",
     ],
     entry_points={
