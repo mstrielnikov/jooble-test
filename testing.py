@@ -1,7 +1,9 @@
+from os import getcwd
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import stddev, mean, col, udf, lit
 from pyspark.sql.types import FloatType
-from os import getcwd
+import matplotlib.pyplot as plt
+
 
 spark = SparkSession.builder.appName("jooble-test").getOrCreate()
 
@@ -45,11 +47,28 @@ def transform_data(input_test_path, input_train_path, output_path, prefix="featu
     return test_df
 
 
+def plot_dataframe(dataframe, y_col: str, x_col: str, title: str = ""):
+    # Select dataframe columns to plot
+    pandas_df = dataframe.select(col(y_col), col(x_col)).toPandas()
+
+    # Build the scatter plot
+    plt.scatter(pandas_df[y_col], pandas_df[x_col])
+    plt.xlabel(y_col)
+    plt.ylabel(x_col)
+    plt.title(title)
+    return plt
+
+
 if __name__ == "__main__":
     WorkDir = getcwd()
     train_data_path = f"{WorkDir}/data/input/train.csv"
     test_data_path = f"{WorkDir}/data/input/test.csv"
     output_data_path = f"{WorkDir}/data/output/test_transformed.csv"
+    
     transformed = transform_data(test_data_path, train_data_path, output_data_path, prefix="feature_type_1")
     transformed.show()
+
+    plot = plot_dataframe(transformed, y_col = "id", x_col = "feature_type_1_stand_0")
+    plot.show()
+
     spark.stop()
