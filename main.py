@@ -46,13 +46,29 @@ def plot_dataframe(dataframe: DataFrame, y_col: str, x_col: str, title: str = ""
     return pyplot
 
 
+def subplot_dataframes(dataframe: DataFrame, x_col: str, cols_names: list[str]) -> pyplot:
+    # Select dataframe columns to plot
+    pandas_df = dataframe.select([ col(col_name) for col_name in cols_names ]).toPandas().to_csv()
+
+    number_of_graphs = len(cols_names)
+    
+    # Create a figure with number_of_graphs subplots arranged in a number_of_graphs x 1 grid
+    fig, axs = pyplot.subplots(number_of_graphs, 1)
+
+    for graph_number in range(number_of_graphs):
+        axs[graph_number].plot(pandas_df[x_col], pandas_df[graph_number])
+        # axs[graph_number].set_tittle()
+    
+    return pyplot
+
+
 if __name__ == "__main__":
     output_data_path = "./data/output/test_transformed.csv"
 
     spark = SparkSession.builder.appName("score-standardization-spark").getOrCreate()
 
     # Load *.csv
-    train_df : DataFrame = spark.read.csv("./data/input/train.csv", header=True, inferSchema=True)
+    train_df = spark.read.csv("./data/input/train.csv", header=True, inferSchema=True)
     test_df = spark.read.csv("./data/input/test.csv", header=True, inferSchema=True)
 
     # Enumerate column headers which starts with `feature_type_1`
@@ -64,7 +80,8 @@ if __name__ == "__main__":
     transformed.toPandas().to_csv(output_data_path)
     transformed.show()
 
-    plot = plot_dataframe(transformed, y_col = "id", x_col = "feature_type_1_1_stand")
+
+    plot = subplot_dataframes(transformed, "id", feature_cols)
     plot.show()
 
     spark.stop()

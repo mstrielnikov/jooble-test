@@ -2,3 +2,4 @@ pyspark
 matplotlib
 jupyter
 ipympl
+pandas
