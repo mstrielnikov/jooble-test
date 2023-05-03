@@ -3,3 +3,5 @@ matplotlib
 jupyter
 ipympl
 pandas
+glob
+nbconvert
